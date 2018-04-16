@@ -23,9 +23,9 @@ getting the coin(s).
 ### Personal Note
 While I (Chad Barraford) love cryptocurrencies, I certainly get nervous using
 them. Despite taking every reasonable precaution to protect my wallet, there
-is always that fear someone will take them. Worse yet, and probably more
+is always that fear someone will take my coins. Worse yet, and probably more
 likely, I will do something stupid and send my coins to the wrong address or
-what have you. This coin is address all the things about crypto that gives me
+what have you. This coin addresses all the things about crypto that gives me
 a personal heart attack every time i use it. haha.
 
 ### In Development
