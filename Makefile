@@ -16,7 +16,7 @@ build-internal:
 	go get -t ${BUILD_ARGS} ${TARGET}
 
 start-internal:
-	~/bin/marvel
+	go run main.go
 
 test-internal:
 	go test ${TARGET}
