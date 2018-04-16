@@ -15,7 +15,7 @@ rather than a public key. This makes it easier for humans to verify they are
 sending to the right person. This feature is optional, for private
 transactions, new public keys can be generated on each transaction.
 
-*Confirm Codes* adds the ability for the receiver to get a one-time-use pin
+*Confirmation Codes* adds the ability for the receiver to get a one-time-use pin
 which is required for the sender to enter to complete the transaction. This
 ensures that you can confirm that the person you want is the one actually
 getting the coin(s).
