@@ -1,6 +1,7 @@
 package node
 
 import (
+	"net/http"
 	"testing"
 	"time"
 
@@ -12,6 +13,24 @@ func TestPackage(t *testing.T) { check.TestingT(t) }
 type NodeSuite struct{}
 
 var _ = check.Suite(&NodeSuite{})
+
+type ClientMock struct {
+}
+
+func (c *ClientMock) Get(url string) (*http.Response, error) {
+	return &http.Response{
+		StatusCode: 200,
+	}, nil
+}
+
+type BadClientMock struct {
+}
+
+func (c *BadClientMock) Get(url string) (*http.Response, error) {
+	return &http.Response{
+		StatusCode: 404,
+	}, nil
+}
 
 func (s *NodeSuite) TestAdd(c *check.C) {
 	nodeSet := NewNodeSet()
@@ -29,6 +48,16 @@ func (s *NodeSuite) TestAdd(c *check.C) {
 	// Do not allow adding future last seen
 	nodeSet.Add(Node{DNS: "test2.marvel.com", IP: "1.2.3.5", LastSeen: time.Now().Add(100 * time.Hour)})
 	c.Check(nodeSet.Nodes, check.HasLen, 1)
+}
+
+func (s *NodeSuite) TestRemove(c *check.C) {
+	nodeSet := NewNodeSet()
+	n := Node{DNS: "test.marvel.com", IP: "1.2.3.4", LastSeen: time.Now()}
+	nodeSet.Add(n)
+	c.Assert(nodeSet.Nodes, check.HasLen, 1)
+
+	nodeSet.Remove(n)
+	c.Assert(nodeSet.Nodes, check.HasLen, 0)
 }
 
 func (s *NodeSuite) TestFilter(c *check.C) {
@@ -58,4 +87,14 @@ func (s *NodeSuite) TestList(c *check.C) {
 
 	c.Assert(nodeSet.List(), check.HasLen, 3)
 	c.Assert(nodeSet.FilterList(), check.HasLen, 1)
+}
+
+func (s *NodeSuite) TestCheck(c *check.C) {
+	nodeSet := NewNodeSet()
+	n := Node{DNS: "test.marvel.com", IP: "1.2.3.4", LastSeen: time.Now()}
+
+	nodeSet.http = &ClientMock{}
+	c.Assert(nodeSet.Check(n), check.Equals, true)
+	nodeSet.http = &BadClientMock{}
+	c.Assert(nodeSet.Check(n), check.Equals, false)
 }

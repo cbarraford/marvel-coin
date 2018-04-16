@@ -8,9 +8,13 @@ import (
 
 const expireIn = 3600
 
+type netClient interface {
+	Get(url string) (*http.Response, error)
+}
+
 type NodeSet struct {
 	Nodes []Node
-	http  http.Client
+	http  netClient
 }
 
 type Node struct {
@@ -20,17 +24,31 @@ type Node struct {
 }
 
 func NewNodeSet() *NodeSet {
+	client := &http.Client{}
 	return &NodeSet{
 		Nodes: nil,
-		http:  http.Client{},
+		http:  client,
 	}
 }
+
+// TODO: We may need to add a mutex in this package to ensure we don't trample
+// ourselves
 
 // Add a new node to the node list. If node is expired or already exists, it
 // will not be added.
 func (s *NodeSet) Add(node Node) {
 	if !isFuture(node) && !isExpired(node) && !doesExist(s.Nodes, node) {
 		s.Nodes = append(s.Nodes, node)
+	}
+}
+
+// Remove a node from the node list.
+func (s *NodeSet) Remove(node Node) {
+	for i, _ := range s.Nodes {
+		if isNode(node, s.Nodes[i]) {
+			s.Nodes = append(s.Nodes[:i], s.Nodes[i+1:]...)
+			break
+		}
 	}
 }
 
@@ -79,9 +97,14 @@ func isFuture(node Node) bool {
 
 func doesExist(ns []Node, node Node) bool {
 	for _, n := range ns {
-		if n.IP == node.IP && n.DNS == node.DNS {
+		if isNode(n, node) {
 			return true
 		}
 	}
 	return false
+}
+
+// Test that these nodes are the same
+func isNode(n1, n2 Node) bool {
+	return n1.IP == n2.IP && n1.DNS == n2.DNS
 }
