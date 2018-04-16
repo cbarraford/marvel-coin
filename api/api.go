@@ -6,9 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/cbarraford/marvel-coin/api/nodes"
+	"github.com/cbarraford/marvel-coin/node"
 )
 
-func GetAPIService() *gin.Engine {
+func GetAPIService(nodeSet *node.NodeSet) *gin.Engine {
 	r := gin.New()
 
 	// Global middleware
@@ -18,7 +19,7 @@ func GetAPIService() *gin.Engine {
 	// Availability API Health Check
 	r.GET("/ping", ping())
 
-	r.GET("/nodes", nodes.List())
+	r.GET("/nodes", nodes.List(nodeSet))
 
 	return r
 }

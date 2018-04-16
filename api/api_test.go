@@ -15,7 +15,7 @@ type ApiSuite struct{}
 var _ = Suite(&ApiSuite{})
 
 func (s *ApiSuite) TestApiService(c *C) {
-	r := GetAPIService()
+	r := GetAPIService(nil)
 
 	// check ping apiendpoint
 	req, _ := http.NewRequest("GET", "/ping", nil)

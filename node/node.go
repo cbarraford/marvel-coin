@@ -1,14 +1,17 @@
 package node
 
 import (
+	"fmt"
+	"net/http"
 	"time"
 )
 
-// TODO add function to check if nodes are still available
-
 const expireIn = 3600
 
-var nodes []Node
+type NodeSet struct {
+	Nodes []Node
+	http  http.Client
+}
 
 type Node struct {
 	DNS      string    `json:"dns"`
@@ -16,16 +19,23 @@ type Node struct {
 	LastSeen time.Time `json:"last_seen"`
 }
 
+func NewNodeSet() *NodeSet {
+	return &NodeSet{
+		Nodes: nil,
+		http:  http.Client{},
+	}
+}
+
 // Add a new node to the node list. If node is expired or already exists, it
 // will not be added.
-func Add(node Node) {
-	if !isFuture(node) && !isExpired(node) && !doesExist(nodes, node) {
-		nodes = append(nodes, node)
+func (s *NodeSet) Add(node Node) {
+	if !isFuture(node) && !isExpired(node) && !doesExist(s.Nodes, node) {
+		s.Nodes = append(s.Nodes, node)
 	}
 }
 
 // Filter the given list of nodes, removing expired and duplicates
-func Filter(ns []Node) []Node {
+func (s *NodeSet) Filter(ns []Node) []Node {
 	newList := []Node{}
 
 	for _, n := range ns {
@@ -35,6 +45,24 @@ func Filter(ns []Node) []Node {
 	}
 
 	return newList
+}
+
+// Return list of nodes
+func (s *NodeSet) List() []Node {
+	return s.Nodes
+}
+
+// Return list of filter nodes
+func (s *NodeSet) FilterList() []Node {
+	return s.Filter(s.Nodes)
+}
+
+func (s *NodeSet) Check(node Node) bool {
+	resp, err := s.http.Get(fmt.Sprintf("http://%s/ping", node.IP))
+	if err != nil {
+		return false
+	}
+	return resp.StatusCode == 200
 }
 
 // Check if time of last seen is expired
@@ -56,14 +84,4 @@ func doesExist(ns []Node, node Node) bool {
 		}
 	}
 	return false
-}
-
-// Return list of nodes
-func List() []Node {
-	return nodes
-}
-
-// Return list of filter nodes
-func FilterList() []Node {
-	return Filter(nodes)
 }

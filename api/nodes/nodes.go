@@ -8,8 +8,8 @@ import (
 	"github.com/cbarraford/marvel-coin/node"
 )
 
-func List() func(*gin.Context) {
+func List(nodeSet *node.NodeSet) func(*gin.Context) {
 	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, node.FilterList())
+		c.JSON(http.StatusOK, nodeSet.FilterList())
 	}
 }
