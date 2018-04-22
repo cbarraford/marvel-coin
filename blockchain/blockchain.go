@@ -16,6 +16,7 @@ const defaultVersion = 1
 type Hash string
 
 type Transaction struct {
+	ID      []byte
 	Inputs  []IO `json:"inputs"`
 	Outputs []IO `json:"outputs"`
 }
