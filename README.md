@@ -7,7 +7,7 @@ idiot proof features.
 
 Marvel Coin implements *two-factor auth* on the protocol layer to ensure that
 even if someone steals your private key(s), they cannot steal your funds. A
-brief [white paper](https://github.com/CBarraford/2FA-Coin) can be read
+brief [white paper](https://github.com/cbarraford/marvel-coin/wiki/Informal-Whitepaper) can be read
 explaining these implementation details.
 
 *Human friendly* addresses Marvel Coin also enables the ability to send coin(s) to an email address
